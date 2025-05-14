@@ -27,7 +27,10 @@ jobs:
 
       - name: Build the package
         run : uipcli package pack "D:\a\cicd\cicd\test" -o "./root" --autoVersion  --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
-
+      
+      - name: Upload the package to orchestrator
+        run: package deploy "./root" https://cloud.uipath.com/persouatgski/DefaultTenant/orchestrator_/ --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}}
+     
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
