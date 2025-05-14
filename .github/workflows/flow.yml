@@ -29,10 +29,10 @@ jobs:
         run : uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion  --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
       
       - name: Upload the package to orchestrator
-        run: package deploy "D:/a/cicd/cicd/package" https://cloud.uipath.com/persouatgski/DefaultTenant/orchestrator_/ default --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}}
+        run: uipcli package deploy "D:/a/cicd/cicd/package" https://cloud.uipath.com/persouatgski/DefaultTenant/orchestrator_/ default --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}}
      
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          path: "./root"
+          path: "D:/a/cicd/cicd/package"
           if-no-files-found: "error"
