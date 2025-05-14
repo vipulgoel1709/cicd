@@ -29,7 +29,7 @@ jobs:
         run : uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion  --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
       
       - name: Upload the package to orchestrator
-        run: uipcli package deploy "D:/a/cicd/cicd/package/" "https://cloud.uipath.com/persouatgski/DefaultTenant/orchestrator_/" DefaultTenant --accountForApp "Personal Org" --createProcess false --applicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --applicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --applicationScope "OR.Folders OR.Settings"
+        run: uipcli package deploy "D:/a/cicd/cicd/package/" "https://cloud.uipath.com/persouatgski/DefaultTenant" DefaultTenant --accountForApp "Personal Org" --createProcess false --applicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --applicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --applicationScope "OR.Folders OR.Settings"
      
       - name: Upload artifact
         uses: actions/upload-artifact@v4
