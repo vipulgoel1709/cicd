@@ -27,4 +27,8 @@ jobs:
 
       - name: Build the package
         run : uipcli package pack "D:\a\cicd\cicd\test" -o "./root" --autoVersion  --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
-        
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: "./root"
