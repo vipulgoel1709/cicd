@@ -32,16 +32,24 @@ jobs:
         id: build_package
         run: uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
 
+      - name: Upload Analyze report
+        uses: actions/upload-artifact@v4
+        if: ${{always()}}
+        with:
+          path: "D:/a/cicd/cicd/result.json"
+          if-no-files-found: "error"
     
 
       - name: Upload the package to orchestrator
         run: uipcli package deploy "D:/a/cicd/cicd/package/" "https://cloud.uipath.com/" DefaultTenant --organizationUnit "SharedFeed" --accountForApp "persouatgski" --createProcess true --applicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --applicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --applicationScope "OR.Default"
 
-      - name: Upload artifact
+      - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          path: "D:/a/cicd/cicd/package,D:/a/cicd/cicd/result.json"
+          path: "D:/a/cicd/cicd/package"
           if-no-files-found: "error"
+
+      
 
       - name: Create tag
         uses: mathieudutour/github-tag-action@v6.2
