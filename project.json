@@ -4,7 +4,6 @@
   "description": "Blank Process",
   "main": "Main.xaml",
   "dependencies": {
-    "CICD.Library": "[1.0.201002853]",
     "UiPath.System.Activities": "[24.10.7]"
   },
   "webServices": [],
