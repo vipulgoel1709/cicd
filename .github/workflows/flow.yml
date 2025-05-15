@@ -42,6 +42,7 @@ jobs:
         id: tag
         with:
           github_token: ${{github.token}}
+          release_branches: main
 
       - name: Create release
         id: create_release
