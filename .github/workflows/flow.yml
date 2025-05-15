@@ -36,3 +36,25 @@ jobs:
         with:
           path: "D:/a/cicd/cicd/package"
           if-no-files-found: "error"
+
+      - name: Create tag
+        uses: mathieudutour/github-tag-action@6.2
+        id: tag
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Create release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "D:/a/cicd/cicd/package/"
+          name: "Test Release"
+          body: "Release body"
+          tag: ${{steps.tag.outputs.new_tag}}
+
+      - name: Echo output of release
+        run: |
+          echo "id : ${{steps.create_release.outputs.id}}"
+          echo "html_url: ${{steps.create_release.outputs.html_url}}"
+          echo "upload_url: ${{steps.create_release.outputs.upload_url}}"
+        
