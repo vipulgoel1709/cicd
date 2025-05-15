@@ -32,12 +32,12 @@ jobs:
         id: build_package
         run: uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
 
-     - name: Upload Analyze report
-       uses: actions/upload-artifact@v4
-       if: ${{always()}}
-       with:
-         path: "D:/a/cicd/cicd/result.json"
-         if-no-files-found: "error"
+      - name: Upload Analyze report
+        uses: actions/upload-artifact@v4
+        if: ${{always()}}
+        with:
+          path: "D:/a/cicd/cicd/result.json"
+          if-no-files-found: "error"
     
 
       - name: Upload the package to orchestrator
