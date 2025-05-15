@@ -1,8 +1,8 @@
 name: Testing Github Actions
 
 on:
-  push: 
-    branches: 
+  push:
+    branches:
       - "main"
 
 jobs:
@@ -15,27 +15,30 @@ jobs:
           version: 24.12.9111.31003
 
       #- name : Get the uipath cli version
-       # run : uipcli --version
-        
-     # - name : Get the dotnet version
+      # run : uipcli --version
+
+      # - name : Get the dotnet version
       #  run : dotnet --version
 
-      - name : Checkout the package
-        uses : actions/checkout@v4
-        with :
-          path : test
+      - name: Checkout the package
+        uses: actions/checkout@v4
+        with:
+          path: test
 
       - name: Build the package
         id: build_package
-        run : uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
-      
-      - name: Upload the package to orchestrator 
+        run: uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
+
+      - name: Analyzed the package
+        run: uipcli package analyze "D:/a/cicd/cicd/package" --analyzerTraceLevel "Error" --stopOnRuleViolation --saveOutputToFile "D:/a/cicd/cicd/result.json" --orchestratorUrl "https://cloud.uipath.com/" --orchestratorTenant "DefaultTenant" --orchestratorFolder "SharedFeed" --orchestratorAccountForApp "persouatgski" --orchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --orchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --orchestratorApplicationScope "OR.Default"
+
+      - name: Upload the package to orchestrator
         run: uipcli package deploy "D:/a/cicd/cicd/package/" "https://cloud.uipath.com/" DefaultTenant --organizationUnit "SharedFeed" --accountForApp "persouatgski" --createProcess true --applicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --applicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --applicationScope "OR.Default"
-     
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          path: "D:/a/cicd/cicd/package"
+          path: "D:/a/cicd/cicd/package,D:/a/cicd/cicd/result.json"
           if-no-files-found: "error"
 
       - name: Create tag
@@ -59,4 +62,3 @@ jobs:
           echo "id : ${{steps.create_release.outputs.id}}"
           echo "html_url: ${{steps.create_release.outputs.html_url}}"
           echo "upload_url: ${{steps.create_release.outputs.upload_url}}"
-        
