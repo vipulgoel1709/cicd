@@ -24,13 +24,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: test
-
+      
+      - name: Analyzed the package
+        run: uipcli package analyze "D:/a/cicd/cicd/test" --analyzerTraceLevel "Error" --stopOnRuleViolation --resultPath "D:/a/cicd/cicd/result.json" --orchestratorUrl "https://cloud.uipath.com/" --orchestratorTenant "DefaultTenant" --orchestratorFolder "SharedFeed" --orchestratorAccountForApp "persouatgski" --orchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --orchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --orchestratorApplicationScope "OR.Default"
+      
       - name: Build the package
         id: build_package
         run: uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
 
-      - name: Analyzed the package
-        run: uipcli package analyze "D:/a/cicd/cicd/package" --analyzerTraceLevel "Error" --stopOnRuleViolation --resultPath "D:/a/cicd/cicd/result.json" --orchestratorUrl "https://cloud.uipath.com/" --orchestratorTenant "DefaultTenant" --orchestratorFolder "SharedFeed" --orchestratorAccountForApp "persouatgski" --orchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --orchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --orchestratorApplicationScope "OR.Default"
+    
 
       - name: Upload the package to orchestrator
         run: uipcli package deploy "D:/a/cicd/cicd/package/" "https://cloud.uipath.com/" DefaultTenant --organizationUnit "SharedFeed" --accountForApp "persouatgski" --createProcess true --applicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --applicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --applicationScope "OR.Default"
