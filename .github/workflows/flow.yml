@@ -25,19 +25,19 @@ jobs:
         with:
           path: test
       
-    #  - name: Analyzed the package
-     #   run: uipcli package analyze "D:/a/cicd/cicd/test" --analyzerTraceLevel "Error" --stopOnRuleViolation --resultPath "D:/a/cicd/cicd/result.json" --orchestratorUrl "https://cloud.uipath.com/" --orchestratorTenant "DefaultTenant" --orchestratorFolder "SharedFeed" --orchestratorAccountForApp "persouatgski" --orchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --orchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --orchestratorApplicationScope "OR.Default"
+      - name: Analyzed the package
+        run: uipcli package analyze "D:/a/cicd/cicd/test" --analyzerTraceLevel "Error" --resultPath "D:/a/cicd/cicd/result.json" --orchestratorUrl "https://cloud.uipath.com/" --orchestratorTenant "DefaultTenant" --orchestratorFolder "SharedFeed" --orchestratorAccountForApp "persouatgski" --orchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --orchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --orchestratorApplicationScope "OR.Default"
       
       - name: Build the package
         id: build_package
         run: uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
 
-    #  - name: Upload Analyze report
-     #   uses: actions/upload-artifact@v4
-      #  if: ${{always()}}
-       # with:
-        #  path: "D:/a/cicd/cicd/result.json"
-         # if-no-files-found: "error"
+     - name: Upload Analyze report
+       uses: actions/upload-artifact@v4
+       if: ${{always()}}
+       with:
+         path: "D:/a/cicd/cicd/result.json"
+         if-no-files-found: "error"
     
 
       - name: Upload the package to orchestrator
