@@ -41,7 +41,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.2
         id: tag
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{github.token}}
 
       - name: Create release
         id: create_release
