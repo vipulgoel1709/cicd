@@ -26,9 +26,10 @@ jobs:
           path : test
 
       - name: Build the package
-        run : uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion  --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
+        id: build_package
+        run : uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
       
-      - name: Upload the package to orchestrator
+      - name: Upload the package to orchestrator 
         run: uipcli package deploy "D:/a/cicd/cicd/package/" "https://cloud.uipath.com/" DefaultTenant --organizationUnit "SharedFeed" --accountForApp "persouatgski" --createProcess true --applicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --applicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --applicationScope "OR.Default"
      
       - name: Upload artifact
@@ -48,7 +49,7 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "D:/a/cicd/cicd/package/"
+          artifacts: "D:/a/cicd/cicd/package/*.nupkg"
           name: "Test Release"
           body: "Release body"
           tag: ${{steps.tag.outputs.new_tag}}
