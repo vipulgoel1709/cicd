@@ -14,11 +14,11 @@ jobs:
         with:
           version: 24.12.9111.31003
 
-      #- name : Get the uipath cli version
-      # run : uipcli --version
+      - name : Get the uipath cli version
+      run : uipcli --version
 
-      # - name : Get the dotnet version
-      #  run : dotnet --version
+      - name : Get the dotnet version
+       run : dotnet --version
 
       - name: Checkout the package
         uses: actions/checkout@v4
@@ -38,6 +38,7 @@ jobs:
         with:
           path: "D:/a/cicd/cicd/result.json"
           if-no-files-found: "error"
+          name: "analyze-report"
     
 
       - name: Upload the package to orchestrator
@@ -48,6 +49,7 @@ jobs:
         with:
           path: "D:/a/cicd/cicd/package/*nupkg"
           if-no-files-found: "error"
+          name: "package"
 
       - name: Create tag
         uses: mathieudutour/github-tag-action@v6.2
