@@ -1,3 +1,5 @@
+# Workflow runs on push on main branch
+
 name: Testing Github Actions
 
 on:
@@ -7,31 +9,33 @@ on:
 
 jobs:
   test-build:
-    runs-on: windows-latest
+    runs-on: windows-latest # OS on which workflow should run
 
     steps:
+      # Download the uipath cli from uipath azure package feed
       - uses: Mikael-RnD/setup-uipath@v2
         with:
           version: 24.12.9111.31003
 
-      - name : Get the uipath cli version
-        run : uipcli --version
+      # Logs the uipath cli version
+      - name: Get the uipath cli version
+        run: uipcli --version
 
-      - name : Get the dotnet version
-        run : dotnet --version
+      # Logs the dotnet version (Dotnet is required for uipath cli to work)
+      - name: Get the dotnet version
+        run: dotnet --version
 
+      # Checkout the repository
       - name: Checkout the package
         uses: actions/checkout@v4
         with:
           path: test
-      
-      - name: Analyzed the package
-        run: uipcli package analyze "D:/a/cicd/cicd/test" --analyzerTraceLevel "Error" --resultPath "D:/a/cicd/cicd/result.json" --orchestratorUrl "https://cloud.uipath.com/" --orchestratorTenant "DefaultTenant" --orchestratorFolder "SharedFeed" --orchestratorAccountForApp "persouatgski" --orchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --orchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --orchestratorApplicationScope "OR.Default"
-      
-      - name: Build the package
-        id: build_package
-        run: uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
 
+      # Analyze the package using uipath analyzer
+      - name: Analyzed the package
+        run: uipcli package analyze "D:/a/cicd/cicd/test" --analyzerTraceLevel "Error" --resultPath "D:/a/cicd/cicd/result.json" --orchestratorUrl ${{secrets.ORCHESTRATOR_URL}} --orchestratorTenant ${{secrets.ORCHESTRATOR_TENANT}} --orchestratorFolder ${{secrets.ORCHESTRATOR_FOLDER}} --orchestratorAccountForApp ${{secrets.ORCHESTRATOR_ORG_NAME}} --orchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --orchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --orchestratorApplicationScope "OR.Default"
+
+      # Upload analyze report as artifacts
       - name: Upload Analyze report to artifacts
         uses: actions/upload-artifact@v4
         if: ${{always()}}
@@ -39,11 +43,17 @@ jobs:
           path: "D:/a/cicd/cicd/result.json"
           if-no-files-found: "error"
           name: "analyze-report"
-    
 
+      # Builds the nuget package
+      - name: Build the package
+        id: build_package
+        run: uipcli package pack "D:/a/cicd/cicd/test" -o "D:/a/cicd/cicd/package" --autoVersion --libraryOrchestratorApplicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --libraryOrchestratorApplicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --repositoryUrl ${{github.repositoryUrl}} --repositoryCommit ${{github.sha}} --repositoryBranch ${{github.ref}}
+
+      # Upload the nuget package to orchestrator and also enable to create process for the package
       - name: Upload the package to orchestrator
-        run: uipcli package deploy "D:/a/cicd/cicd/package/" "https://cloud.uipath.com/" DefaultTenant --organizationUnit "SharedFeed" --accountForApp "persouatgski" --createProcess true --applicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --applicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --applicationScope "OR.Default"
+        run: uipcli package deploy "D:/a/cicd/cicd/package/" ${{secrets.ORCHESTRATOR_URL}} ${{secrets.ORCHESTRATOR_TENANT}} --organizationUnit ${{secrets.ORCHESTRATOR_FOLDER}} --accountForApp ${{secrets.ORCHESTRATOR_ORG_NAME}} --createProcess true --applicationId ${{secrets.ORCHESTRATOR_APPLICATION_ID}} --applicationSecret ${{secrets.ORCHESTRATOR_APPLICATION_SECRET}} --applicationScope "OR.Default"
 
+      # Upload package to artifacts
       - name: Upload package to artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -51,6 +61,7 @@ jobs:
           if-no-files-found: "error"
           name: "package"
 
+      # Creating tag to create release
       - name: Create tag
         uses: mathieudutour/github-tag-action@v6.2
         id: tag
@@ -58,6 +69,7 @@ jobs:
           github_token: ${{github.token}}
           release_branches: main
 
+      # Creating github release
       - name: Create release
         id: create_release
         uses: ncipollo/release-action@v1
@@ -67,6 +79,7 @@ jobs:
           body: "Release body"
           tag: ${{steps.tag.outputs.new_tag}}
 
+      # prints output of release created
       - name: Echo output of release
         run: |
           echo "id : ${{steps.create_release.outputs.id}}"
